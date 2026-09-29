@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#101828" />
+  <meta name="description" content="Feedback Zone — evaluasi pembelajaran dan pengalaman siswa secara anonim." />
+  <title>Feedback Zone — Suara Siswa, Arah Perbaikan</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23101828'/%3E%3Cpath d='M18 32h7l4-11 7 23 5-15 4 3h7' fill='none' stroke='%23fff' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Feedback Zone">
+        <span class="brand-mark">FZ</span>
+        <span><strong>Feedback Zone</strong><small>Suara siswa • arah perbaikan</small></span>
+      </a>
+      <div id="sessionBadge" class="session-badge hidden"></div>
+    </header>
+
+    <main>
+      <section id="loadingView" class="screen center-screen">
+        <div class="loader-card"><div class="spinner"></div><p>Menyiapkan Feedback Zone…</p></div>
+      </section>
+
+      <section id="startView" class="screen hidden">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <span class="eyebrow">FEEDBACK ZONE</span>
+            <h1>Jujur. Santun.<br /><em>Berdampak.</em></h1>
+            <p class="lead">Sampaikan pengalaman belajar secara jujur dan konstruktif. Nama siswa tidak diminta dan tidak ditampilkan dalam hasil evaluasi.</p>
+            <div class="principles">
+              <div><b>01</b><span><strong>Pilih kelas Anda</strong><br />Kelas dipakai untuk analisis hasil berdasarkan kelompok belajar.</span></div>
+              <div><b>02</b><span><strong>Masukkan email Anda</strong><br />Cukup isi email lalu mulai. Tidak perlu verifikasi. Email pribadi diperbolehkan.</span></div>
+              <div><b>03</b><span><strong>Nama siswa tidak dikumpulkan</strong><br />Identitas tidak ditampilkan pada dashboard atau rekap feedback.</span></div>
+            </div>
+          </div>
+
+          <div class="login-card glass-card">
+            <div class="lock-icon">✓</div>
+            <span class="eyebrow">TAHAP 1 • MASUK</span>
+            <h2>Mulai Feedback Zone</h2>
+            <p>Pilih kelas dan masukkan email Anda, lalu klik Mulai. Tidak ada tautan verifikasi.</p>
+
+            <div class="form-stack">
+              <label class="field-card">
+                <span>Kelas Anda</span>
+                <select id="classSelect" autocomplete="off">
+                  <option value="">Memuat pilihan kelas…</option>
+                </select>
+                <small>Pilih sesuai kelas yang sedang Anda ikuti.</small>
+              </label>
+
+              <label class="field-card">
+                <span>Email</span>
+                <input id="emailInput" type="email" inputmode="email" autocomplete="email" placeholder="contoh@email.com" />
+                <small>Email pribadi boleh. Tidak perlu verifikasi.</small>
+              </label>
+
+              <label class="check-row">
+                <input id="privacyConsent" type="checkbox" />
+                <span>Saya memahami bahwa feedback akan digunakan untuk evaluasi dan pengembangan pembelajaran sekolah.</span>
+              </label>
+            </div>
+
+            <button id="sendLinkBtn" class="primary-btn wide" disabled>Mulai <span>→</span></button>
+            <div id="startError" class="alert error hidden"></div>
+            <p class="micro-note">Nama siswa tidak ditanyakan. Email tidak diverifikasi dan tidak disalin ke dokumen feedback.</p>
+          </div>
+        </div>
+      </section>
+
+
+      <section id="blockedView" class="screen hidden">
+        <div class="empty-card"><div class="empty-icon">!</div><h2>Akses belum dapat dilanjutkan</h2><p id="blockedMessage"></p><button id="blockedBackBtn" class="secondary-btn">Kembali</button></div>
+      </section>
+
+      <section id="closedView" class="screen hidden">
+        <div class="empty-card"><div class="empty-icon">◎</div><h2>Feedback sedang tidak dibuka</h2><p id="closedMessage">Periode feedback belum aktif.</p><button id="closedSignoutBtn" class="secondary-btn">Keluar</button></div>
+      </section>
+
+      <section id="selectionView" class="screen hidden">
+        <div class="content-head">
+          <div><span class="eyebrow">TAHAP 2</span><h2>Pilih guru yang ingin diberi feedback</h2><p>Semua guru aktif ditampilkan. Untuk tiap guru, pilih apakah beliau mengajar Anda atau tidak mengajar Anda.</p></div>
+          <div class="stat-chip"><strong id="teacherCount">0</strong><span>guru</span></div>
+        </div>
+        <div class="privacy-strip"><div class="privacy-dot">✓</div><div><strong>Identitas tetap anonim pada hasil.</strong> Kelas dicatat untuk analisis kelompok, tetapi nama siswa tidak dicatat dalam respons.</div></div>
+        <div class="toolbar">
+          <label class="search-field"><span>⌕</span><input id="teacherSearch" type="search" placeholder="Cari nama guru atau mata pelajaran…" autocomplete="off" /></label>
+          <div class="filter-pills" role="group" aria-label="Filter guru">
+            <button class="filter-pill active" data-filter="all">Semua</button>
+            <button class="filter-pill" data-filter="teaching">Mengajar saya</button>
+            <button class="filter-pill" data-filter="not_teaching">Tidak mengajar</button>
+            <button class="filter-pill" data-filter="done">Sudah selesai</button>
+          </div>
+        </div>
+        <div id="teacherGrid" class="teacher-grid"></div>
+        <div id="teacherEmpty" class="empty-card small hidden"><h3>Tidak ada guru yang cocok</h3><p>Coba kata kunci lain atau ubah filter.</p></div>
+        <div class="sticky-action">
+          <div><strong id="selectedCount">0 guru dipilih</strong><span id="selectedHint">Pilih minimal satu guru untuk melanjutkan.</span></div>
+          <button id="startFeedbackBtn" class="primary-btn" disabled>Mulai feedback <span>→</span></button>
+        </div>
+      </section>
+
+      <section id="feedbackView" class="screen hidden">
+        <div class="feedback-top"><button id="backToSelectionBtn" class="back-link">← Kembali ke daftar guru</button><div class="progress-meta"><span id="feedbackProgressText">1/1</span><strong id="feedbackPercent">0%</strong></div></div>
+        <div class="progress-track"><span id="feedbackProgressBar"></span></div>
+        <div class="feedback-header"><div><span class="eyebrow" id="relationshipLabel">FEEDBACK GURU</span><h2 id="activeTeacherName">Nama Guru</h2><p id="activeTeacherSubject">Mata Pelajaran</p></div><div class="teacher-avatar" id="activeTeacherAvatar">GA</div></div>
+
+        <div id="teachingForm" class="form-section hidden">
+          <div class="section-heading"><span>01</span><div><h3>Pengalaman pembelajaran</h3><p>Skala: 1 = Sangat Tidak Sesuai, 5 = Sangat Sesuai. Nilai berdasarkan pengalaman Anda sendiri.</p></div></div>
+          <div id="teachingQuestions" class="question-list"></div>
+          <div class="section-heading gap-top"><span>02</span><div><h3>Suara siswa</h3><p>Apa yang perlu dipertahankan, dikembangkan, atau dilakukan berbeda?</p></div></div>
+          <div id="teachingEssays" style="display:grid;gap:16px"></div>
+        </div>
+
+        <div id="nonTeachingForm" class="form-section hidden">
+          <div class="info-card"><span class="info-icon">i</span><div><strong>Guru ini tidak mengajar Anda.</strong><p>Jangan menilai kualitas mengajarnya. Berikan feedback hanya berdasarkan interaksi atau pengalaman lain yang benar-benar Anda alami.</p></div></div>
+          <div class="section-heading"><span>01</span><div><h3>Konteks pengalaman</h3><p>Pilih konteks yang paling sesuai.</p></div></div>
+          <div id="nonTeachingContext" class="choice-grid">
+            <button class="choice-card" data-value="kegiatan"><strong>Kegiatan sekolah</strong><span>Pernah berinteraksi dalam kegiatan atau program sekolah.</span></button>
+            <button class="choice-card" data-value="layanan"><strong>Layanan / bantuan</strong><span>Pernah mendapatkan bantuan, arahan, atau layanan.</span></button>
+            <button class="choice-card" data-value="interaksi"><strong>Interaksi lain</strong><span>Pernah berinteraksi di luar pembelajaran.</span></button>
+            <button class="choice-card" data-value="lainnya"><strong>Lainnya</strong><span>Ada konteks lain yang relevan dan Anda alami sendiri.</span></button>
+          </div>
+          <label class="textarea-card full"><span>Feedback Anda untuk guru ini…</span><textarea id="nonTeachingFeedback" maxlength="1500" placeholder="Fokus pada pengalaman yang Anda alami sendiri. Hindari menyebut identitas siswa lain."></textarea><small>Opsional • maks. 1.500 karakter</small></label>
+        </div>
+
+        <div class="form-footer"><div id="formError" class="alert error hidden"></div><div class="footer-note">Feedback yang sudah dikirim untuk guru ini tidak dapat diubah. Anda masih dapat menyelesaikan guru lain yang sudah dipilih.</div><button id="submitTeacherBtn" class="primary-btn">Kirim feedback <span>→</span></button></div>
+      </section>
+
+      <section id="completeView" class="screen hidden">
+        <div class="complete-card"><div class="check-burst">✓</div><span class="eyebrow">SELESAI</span><h2>Terima kasih sudah bersuara.</h2><p id="completeMessage">Feedback Anda sudah tersimpan. Setiap respons akan menjadi bahan perbaikan pembelajaran.</p><div class="complete-stats"><div><strong id="completedNumber">0</strong><span>guru selesai</span></div><div><strong id="remainingNumber">0</strong><span>belum selesai</span></div></div><button id="continueFeedbackBtn" class="primary-btn hidden">Lanjutkan guru lain <span>→</span></button><button id="completeSignoutBtn" class="secondary-btn">Keluar</button></div>
+      </section>
+    </main>
+
+    <footer class="footer"><span>Feedback Zone</span><span>•</span><span>Evaluasi untuk perbaikan, bukan untuk menghakimi.</span></footer>
+  </div>
+  <div id="toast" class="toast hidden"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+    }
+
+    match /settings/{docId} {
+      allow read: if signedIn() || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /periods/{periodId} {
+      allow read: if signedIn() || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /classes/{classId} {
+      allow read: if signedIn() || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /teachers/{teacherId} {
+      allow read: if signedIn() || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /questions/{questionId} {
+      allow read: if signedIn() || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /admins/{userId} {
+      allow read: if (signedIn() && request.auth.uid == userId) || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read, write: if false;
+      match /responses/{responseId} {
+        allow create: if signedIn()
+          && request.auth.uid == userId
+          && !exists(/databases/$(database)/documents/users/$(userId)/responses/$(responseId))
+          && request.resource.data.keys().hasOnly([
+            "periodId", "periodTitle", "classId", "classLabelSnapshot",
+            "teacherId", "teacherNameSnapshot", "subjectSnapshot",
+            "relationship", "ratings", "positive", "improvement", "suggestion",
+            "context", "feedback", "essays", "createdAt"
+          ])
+          && request.resource.data.relationship in ["teaching", "not_teaching"]
+          && request.resource.data.periodId is string
+          && request.resource.data.classId is string
+          && request.resource.data.teacherId is string
+          && request.resource.data.createdAt is timestamp
+          && (!("essays" in request.resource.data) || request.resource.data.essays is map)
+          && exists(/databases/$(database)/documents/classes/$(request.resource.data.classId));
+
+        allow read: if (signedIn() && request.auth.uid == userId) || isAdmin();
+        allow update, delete: if false;
+      }
+    }
+
+    // Dashboard admin: collectionGroup("responses") membutuhkan aturan ini (rules_version 2).
+    match /{path=**}/responses/{responseId} {
+      allow read: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

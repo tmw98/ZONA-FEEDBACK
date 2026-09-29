@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#101828" />
+  <title>Feedback Zone — Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="dashboard-body">
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html"><span class="brand-mark">FZ</span><span><strong>Feedback Zone</strong><small>Dashboard pengelola</small></span></a>
+      <div class="top-actions"><span id="adminEmail" class="session-badge"></span><button id="adminSignoutBtn" class="ghost-btn">Keluar</button></div>
+    </header>
+    <main>
+      <section id="adminLoading" class="screen center-screen"><div class="loader-card"><div class="spinner"></div><p>Memuat dashboard…</p></div></section>
+      <section id="adminLogin" class="screen hidden"><div class="empty-card"><div class="lock-icon">⌁</div><h2>Dashboard pengelola</h2><p>Masuk dengan akun Google yang telah diberi hak admin.</p><button id="adminLoginBtn" class="primary-btn">Masuk dengan Google</button><div id="adminLoginError" class="alert error hidden"></div></div></section>
+      <section id="adminDenied" class="screen hidden"><div class="empty-card"><div class="empty-icon">!</div><h2>Akses dashboard tidak tersedia</h2><p>Akun ini berhasil masuk, tetapi belum terdaftar sebagai admin.</p><button id="adminDeniedSignout" class="secondary-btn">Keluar</button></div></section>
+      <section id="dashboardView" class="screen hidden">
+        <div class="content-head dashboard-head"><div><span class="eyebrow">CONTROL ROOM</span><h2>Feedback Zone Dashboard</h2><p>Ringkasan respons anonim untuk evaluasi dan pengembangan pembelajaran.</p></div><div class="period-select"><label>Periode</label><select id="periodSelect"></select><label>Kelas</label><select id="classFilter"></select></div></div>
+        <div id="dashboardError" class="alert error hidden"></div>
+        <div class="kpi-grid"><div class="kpi"><span>Total feedback</span><strong id="kpiTotal">0</strong><small>seluruh guru</small></div><div class="kpi"><span>Guru aktif</span><strong id="kpiTeachers">0</strong><small>mendapat respons</small></div><div class="kpi"><span>Feedback mengajar</span><strong id="kpiTeaching">0</strong><small>pengalaman pembelajaran</small></div><div class="kpi"><span>Rata-rata skor</span><strong id="kpiAverage">—</strong><small>dari 5</small></div></div>
+        <div class="dashboard-grid">
+          <section class="panel"><div class="panel-head"><div><span class="eyebrow">PROFIL GURU</span><h3>Rekap per guru</h3></div><button id="exportCsvBtn" class="secondary-btn small">Ekspor CSV</button></div><div class="table-wrap"><table><thead><tr><th>Guru</th><th>Mapel</th><th>Feedback</th><th>Mengajar</th><th>Skor</th></tr></thead><tbody id="teacherSummaryBody"></tbody></table></div></section>
+          <section class="panel"><div class="panel-head"><div><span class="eyebrow">DIMENSI</span><h3>Rata-rata aspek</h3></div></div><div id="dimensionBars" class="bar-list"></div></section>
+        </div>
+        <section class="panel comments-panel"><div class="panel-head"><div><span class="eyebrow">SUARA SISWA</span><h3>Feedback tertulis</h3></div><div class="filter-row"><select id="commentTeacherFilter"><option value="all">Semua guru</option></select><select id="commentTypeFilter"><option value="all">Semua jenis</option><option value="teaching">Guru saya</option><option value="not_teaching">Tidak mengajar saya</option></select></div></div><div id="commentList" class="comment-list"></div></section>
+      </section>
+    </main>
+    <footer class="footer"><span>Feedback Zone</span><span>•</span><span>Dashboard hanya untuk pengelola berwenang.</span></footer>
+  </div>
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+{
+  "settings": {
+    "app": {
+      "activePeriodId": "periode-1",
+      "maintenance": false,
+      "closedMessage": "Periode feedback sedang tidak dibuka."
+    }
+  },
+  "periods": {
+    "periode-1": {
+      "title": "Periode 1",
+      "active": true
+    }
+  },
+  "classes": {
+    "x-umum-1": {
+      "label": "X Umum 1",
+      "sort": 1,
+      "active": true
+    },
+    "x-umum-2": {
+      "label": "X Umum 2",
+      "sort": 2,
+      "active": true
+    },
+    "xi-stek-1": {
+      "label": "XI STEK 1",
+      "sort": 3,
+      "active": true
+    },
+    "xi-stek-2": {
+      "label": "XI STEK 2",
+      "sort": 4,
+      "active": true
+    },
+    "xi-shum-1": {
+      "label": "XI SHUM 1",
+      "sort": 5,
+      "active": true
+    },
+    "xi-shum-2": {
+      "label": "XI SHUM 2",
+      "sort": 6,
+      "active": true
+    },
+    "xii-minat-a": {
+      "label": "XII MINAT A",
+      "sort": 7,
+      "active": true
+    },
+    "xii-minat-b1": {
+      "label": "XII MINAT B1",
+      "sort": 8,
+      "active": true
+    },
+    "xii-minat-b2": {
+      "label": "XII MINAT B2",
+      "sort": 9,
+      "active": true
+    }
+  },
+  "teachers": {
+    "guru-01": {
+      "name": "Oman Komarudin, S.Pd.I., Gr",
+      "subject": "",
+      "sort": 1,
+      "active": true
+    },
+    "guru-02": {
+      "name": "Dedi Setiadi, S.Pd.I., Gr",
+      "subject": "",
+      "sort": 2,
+      "active": true
+    },
+    "guru-03": {
+      "name": "Neni Setiani, S.Pd., Gr",
+      "subject": "",
+      "sort": 3,
+      "active": true
+    },
+    "guru-04": {
+      "name": "Neneng Wulandari, S.Pd., Gr",
+      "subject": "",
+      "sort": 4,
+      "active": true
+    },
+    "guru-05": {
+      "name": "Wahyudin, S.Pd.I",
+      "subject": "",
+      "sort": 5,
+      "active": true
+    },
+    "guru-06": {
+      "name": "Sri Dewi, S.Pd., Gr",
+      "subject": "",
+      "sort": 6,
+      "active": true
+    },
+    "guru-07": {
+      "name": "Ir. Jahja Chusnul Amin, Gr",
+      "subject": "",
+      "sort": 7,
+      "active": true
+    },
+    "guru-08": {
+      "name": "Imas Nurhasanah, S.Pd",
+      "subject": "",
+      "sort": 8,
+      "active": true
+    },
+    "guru-09": {
+      "name": "Iis Sumiyati, S.Pd., Gr",
+      "subject": "",
+      "sort": 9,
+      "active": true
+    },
+    "guru-10": {
+      "name": "Tetep Kusmiadi, S.Kom., Gr",
+      "subject": "",
+      "sort": 10,
+      "active": true
+    },
+    "guru-11": {
+      "name": "Risma Depa Y",
+      "subject": "",
+      "sort": 11,
+      "active": true
+    },
+    "guru-12": {
+      "name": "Riani Rahayu, S.Pd",
+      "subject": "",
+      "sort": 12,
+      "active": true
+    },
+    "guru-13": {
+      "name": "Regina Geraldin, S.Pd., Gr",
+      "subject": "",
+      "sort": 13,
+      "active": true
+    },
+    "guru-14": {
+      "name": "Yati Haryati, S.IP., Gr",
+      "subject": "",
+      "sort": 14,
+      "active": true
+    },
+    "guru-15": {
+      "name": "Wiwi Agustin, S.Pd., Gr",
+      "subject": "",
+      "sort": 15,
+      "active": true
+    },
+    "guru-16": {
+      "name": "Nina Marlina, S.Pd., Gr",
+      "subject": "",
+      "sort": 16,
+      "active": true
+    },
+    "guru-17": {
+      "name": "Riyan Ananda Nurfadila, S.Pd",
+      "subject": "",
+      "sort": 17,
+      "active": true
+    },
+    "guru-18": {
+      "name": "Ginanjar, S.Pd., Gr",
+      "subject": "",
+      "sort": 18,
+      "active": true
+    },
+    "guru-19": {
+      "name": "Winwin Herwina, S.Sn",
+      "subject": "",
+      "sort": 19,
+      "active": true
+    },
+    "guru-20": {
+      "name": "Iin Indriyani, S.Si., Gr",
+      "subject": "",
+      "sort": 20,
+      "active": true
+    },
+    "guru-21": {
+      "name": "Sendi Ernandi, S.Pd.I., Gr",
+      "subject": "",
+      "sort": 21,
+      "active": true
+    },
+    "guru-22": {
+      "name": "Fitri Ayu Desnia, S.Pd",
+      "subject": "",
+      "sort": 22,
+      "active": true
+    }
+  },
+  "questions": {
+    "r1": {
+      "kind": "rating",
+      "dimension": "Kehadiran",
+      "short": "Kehadiran",
+      "prompt": "Guru rutin hadir dan masuk kelas sesuai jadwal.",
+      "order": 1,
+      "active": true
+    },
+    "r2": {
+      "kind": "rating",
+      "dimension": "Kejelasan penjelasan",
+      "short": "Kejelasan penjelasan",
+      "prompt": "Guru menjelaskan materi dengan cara yang mudah saya pahami.",
+      "order": 2,
+      "active": true
+    },
+    "r3": {
+      "kind": "rating",
+      "dimension": "Interaksi & diskusi",
+      "short": "Interaksi & diskusi",
+      "prompt": "Guru memberi kesempatan kepada saya dan teman-teman untuk bertanya, berdiskusi, atau menyampaikan pendapat.",
+      "order": 3,
+      "active": true
+    },
+    "r4": {
+      "kind": "rating",
+      "dimension": "Kesesuaian tugas",
+      "short": "Kesesuaian tugas",
+      "prompt": "Guru memberikan tugas atau kegiatan yang sesuai dengan materi yang sedang dipelajari.",
+      "order": 4,
+      "active": true
+    },
+    "r5": {
+      "kind": "rating",
+      "dimension": "Sikap & penghargaan",
+      "short": "Sikap & penghargaan",
+      "prompt": "Guru memperlakukan siswa dengan baik dan menghargai siswa selama pembelajaran.",
+      "order": 5,
+      "active": true
+    },
+    "e1": {
+      "kind": "essay",
+      "short": "Yang paling disukai",
+      "tag": "positive",
+      "prompt": "Apa yang paling kamu suka dari cara guru ini mengajar?",
+      "order": 1,
+      "active": true
+    },
+    "e2": {
+      "kind": "essay",
+      "short": "Perlu diperbaiki",
+      "tag": "improvement",
+      "prompt": "Apa yang menurut kamu perlu diperbaiki dari guru ini?",
+      "order": 2,
+      "active": true
+    },
+    "e3": {
+      "kind": "essay",
+      "short": "Agar lebih menarik",
+      "tag": "suggestion",
+      "prompt": "Menurut kamu, apa yang bisa dilakukan guru agar pembelajaran lebih menarik?",
+      "order": 3,
+      "active": true
+    },
+    "e4": {
+      "kind": "essay",
+      "short": "Kesulitan / kurang nyaman",
+      "tag": "improvement",
+      "prompt": "Apakah ada hal dari cara guru mengajar yang membuat kamu kesulitan atau kurang nyaman saat belajar? Ceritakan jika ada.",
+      "order": 4,
+      "active": true
+    },
+    "e5": {
+      "kind": "essay",
+      "short": "Saran",
+      "tag": "suggestion",
+      "prompt": "Kalau kamu bisa memberi satu saran kepada guru ini, apa yang ingin kamu sampaikan?",
+      "order": 5,
+      "active": true
+    }
+  }
+}

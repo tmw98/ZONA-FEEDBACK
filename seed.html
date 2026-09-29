@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Feedback Zone — Isi Data Awal</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, sans-serif; max-width: 680px; margin: 32px auto; padding: 0 16px; line-height: 1.55; }
+    h1 { font-size: 1.5rem; margin-bottom: 4px; }
+    h2 { font-size: 1.05rem; margin: 0 0 8px; }
+    .muted { opacity: .7; font-size: .92rem; }
+    .card { border: 1px solid rgba(128,128,128,.4); border-radius: 12px; padding: 16px; margin: 16px 0; }
+    .hidden { display: none; }
+    button { font: inherit; padding: 9px 16px; border-radius: 8px; border: 1px solid rgba(128,128,128,.6); cursor: pointer; margin: 4px 6px 4px 0; }
+    button.primary { background: #1a56db; border-color: #1a56db; color: #fff; }
+    button:disabled { opacity: .5; cursor: default; }
+    code { background: rgba(128,128,128,.2); padding: 2px 6px; border-radius: 4px; word-break: break-all; }
+    ol { padding-left: 20px; }
+    pre { background: rgba(128,128,128,.15); padding: 12px; border-radius: 8px; white-space: pre-wrap; min-height: 40px; font-size: .88rem; }
+  </style>
+</head>
+<body>
+  <h1>Isi Data Awal Feedback Zone</h1>
+  <p class="muted">Halaman sekali pakai. Setelah data masuk, hapus file <code>seed.html</code> dari proyek.</p>
+
+  <section id="step1" class="card">
+    <h2>1. Masuk dengan Google</h2>
+    <p class="muted">Gunakan akun Google yang akan menjadi admin.</p>
+    <button id="loginBtn" class="primary">Masuk dengan Google</button>
+  </section>
+
+  <section id="step2" class="card hidden">
+    <h2>2. Daftarkan akun ini sebagai admin</h2>
+    <p>Masuk sebagai <b id="who"></b><br />UID: <code id="uid"></code> <button id="copyUid">Salin UID</button></p>
+    <p>Akun ini belum terdaftar sebagai admin. Di Firebase Console buka <b>Firestore Database → Data</b>, lalu:</p>
+    <ol>
+      <li>Klik <b>Start collection</b>, isi Collection ID: <code>admins</code></li>
+      <li>Document ID: tempel UID di atas</li>
+      <li>Field: <code>active</code>, Type: <b>boolean</b>, Value: <b>true</b></li>
+      <li>Klik <b>Save</b>, lalu kembali ke sini</li>
+    </ol>
+    <button id="recheckBtn" class="primary">Sudah dibuat, cek ulang</button>
+    <button id="signoutBtn2">Keluar</button>
+  </section>
+
+  <section id="step3" class="card hidden">
+    <h2>3. Impor data</h2>
+    <p id="summary" class="muted"></p>
+    <button id="importBtn" class="primary">Impor data sekarang</button>
+    <button id="signoutBtn3">Keluar</button>
+  </section>
+
+  <pre id="log"></pre>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+    import { firebaseConfig } from "./config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const $ = id => document.getElementById(id);
+    const log = msg => { $("log").textContent += msg + "\n"; };
+    const show = step => ["step1", "step2", "step3"].forEach(s => $(s).classList.toggle("hidden", s !== step));
+
+    let seedData = null;
+
+    async function checkAdmin(user) {
+      $("who").textContent = user.email || "(tanpa email)";
+      $("uid").textContent = user.uid;
+      try {
+        const snap = await getDoc(doc(db, "admins", user.uid));
+        if (snap.exists() && snap.data()?.active === true) {
+          const res = await fetch("./sample-data.json", { cache: "no-store" });
+          if (!res.ok) throw new Error("sample-data.json tidak ditemukan (HTTP " + res.status + ")");
+          seedData = await res.json();
+          const counts = Object.entries(seedData).map(([col, docs]) => `${col}: ${Object.keys(docs).length}`).join(" • ");
+          $("summary").textContent = "Akun admin terdeteksi. Data yang akan diimpor → " + counts;
+          show("step3");
+        } else {
+          show("step2");
+        }
+      } catch (e) {
+        console.error(e);
+        log("Gagal memeriksa admin: " + (e.code || e.message) + "\nPastikan Firestore Rules sudah di-Publish.");
+        show("step2");
+      }
+    }
+
+    $("loginBtn").addEventListener("click", async () => {
+      try { await signInWithPopup(auth, new GoogleAuthProvider()); }
+      catch (e) { console.error(e); log("Login gagal: " + (e.code || e.message) + "\nPastikan provider Google sudah diaktifkan dan domain ini ada di Authorized domains."); }
+    });
+    $("recheckBtn").addEventListener("click", () => auth.currentUser && checkAdmin(auth.currentUser));
+    $("copyUid").addEventListener("click", () => navigator.clipboard?.writeText($("uid").textContent));
+    ["signoutBtn2", "signoutBtn3"].forEach(id => $(id).addEventListener("click", () => signOut(auth)));
+
+    $("importBtn").addEventListener("click", async () => {
+      if (!seedData) return;
+      $("importBtn").disabled = true;
+      log("Mengimpor…");
+      try {
+        const entries = [];
+        for (const [col, docs] of Object.entries(seedData)) {
+          for (const [id, fields] of Object.entries(docs)) entries.push([col, id, fields]);
+        }
+        for (let i = 0; i < entries.length; i += 400) {
+          const batch = writeBatch(db);
+          entries.slice(i, i + 400).forEach(([col, id, fields]) => batch.set(doc(db, col, id), fields));
+          await batch.commit();
+        }
+        log(`Selesai: ${entries.length} dokumen berhasil ditulis. Sekarang hapus seed.html dari proyek.`);
+      } catch (e) {
+        console.error(e);
+        log("Gagal: " + (e.code || e.message) + "\nPeriksa: Rules sudah di-Publish, dan dokumen admins/(UID) punya field active = true bertipe boolean.");
+        $("importBtn").disabled = false;
+      }
+    });
+
+    onAuthStateChanged(auth, user => { if (!user) show("step1"); else checkAdmin(user); });
+  </script>
+</body>
+</html>
