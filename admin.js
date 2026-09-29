@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/fireba
 import {
   getAuth,
   GoogleAuthProvider,
+  signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
   signOut,
@@ -10,6 +11,7 @@ import {
 import {
   getFirestore,
   collection,
+  collectionGroup,
   getDocs,
   getDoc,
   doc,
@@ -36,9 +38,27 @@ function avg(nums) { const a = nums.filter(n => Number.isFinite(n)); return a.le
 function fmt(n) { return n == null ? "—" : n.toFixed(2); }
 function dateText(ts) { if (!ts) return ""; const d = typeof ts.toDate === "function" ? ts.toDate() : new Date(ts); return new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(d); }
 
+function showLoginError(message) {
+  const box = $("adminLoginError");
+  box.textContent = message;
+  box.classList.remove("hidden");
+}
+
+// Login memakai popup (tidak bergantung pada penyimpanan lintas-origin seperti redirect).
+// Redirect hanya dipakai sebagai cadangan jika popup tidak tersedia/diblokir.
 async function signIn() {
-  try { await signInWithRedirect(auth, provider); }
-  catch (e) { console.error(e); $("adminLoginError").textContent = "Login gagal. Silakan coba lagi."; $("adminLoginError").classList.remove("hidden"); }
+  $("adminLoginError").classList.add("hidden");
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (e) {
+    console.error(e);
+    if (e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request") return;
+    if (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment") {
+      try { await signInWithRedirect(auth, provider); return; }
+      catch (e2) { console.error(e2); showLoginError("Login gagal: " + (e2.code || e2.message)); return; }
+    }
+    showLoginError("Login gagal: " + (e.code || e.message));
+  }
 }
 
 async function isAdmin(user) {
@@ -66,8 +86,7 @@ async function loadDashboardData() {
 
 async function loadResponses(periodId) {
   state.activePeriodId = periodId;
-  // Firestore collectionGroup lets the dashboard read response documents across all student paths.
-  const { collectionGroup } = await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js");
+  // collectionGroup membaca dokumen "responses" dari seluruh path siswa.
   const responseSnap = await getDocs(query(collectionGroup(db, "responses"), where("periodId", "==", periodId)));
   state.responses = responseSnap.docs.map(d => ({ id: d.id, ...d.data() }));
   renderDashboard();
@@ -161,7 +180,8 @@ $("classFilter").addEventListener("change", e => { state.classFilter = e.target.
 $("exportCsvBtn").addEventListener("click", exportCsv);
 
 (async () => {
-  try { await getRedirectResult(auth); } catch (e) { console.error(e); }
+  try { await getRedirectResult(auth); }
+  catch (e) { console.error(e); showLoginError("Login gagal: " + (e.code || e.message)); }
   onAuthStateChanged(auth, async user => {
     if (!user) { show("adminLogin"); return; }
     $("adminEmail").textContent = "Akun admin terverifikasi";
@@ -171,7 +191,7 @@ $("exportCsvBtn").addEventListener("click", exportCsv);
       show("dashboardView");
     } catch (error) {
       console.error(error);
-      $("dashboardError").textContent = "Dashboard belum dapat memuat data. Periksa Firestore Rules dan indeks/query.";
+      $("dashboardError").textContent = "Dashboard belum dapat memuat data: " + (error.code || error.message) + ". Periksa Firestore Rules dan indeks/query.";
       $("dashboardError").classList.remove("hidden");
       show("dashboardView");
     }
